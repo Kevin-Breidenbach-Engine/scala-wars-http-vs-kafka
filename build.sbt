@@ -15,10 +15,6 @@ lazy val commonSettings = Seq(
   scalaVersion := scalaV,
   semanticdbEnabled := true,
   semanticdbVersion := scalafixSemanticdb.revision,
-  resolvers ++= Seq(
-    "EVEN Private Releases" at "s3://evenfinancial/maven/private/releases",
-    "EVEN Private Snapshots" at "s3://evenfinancial/maven/private/snapshots"
-  ),
   libraryDependencies ++= mainLibraries,
   publish / skip := true,
   Compile / run / fork := true
