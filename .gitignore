@@ -1,0 +1,9 @@
+.bloop/
+.metals/
+metals.sbt
+target
+.vscode/
+.bsp
+.idea/
+docker-compose-*.yml
+.git
