@@ -42,6 +42,14 @@ lazy val testSettings = Seq(
   Test / fork := true
 )
 
+lazy val scalaWarsCore = (project in file("modules/scala-wars-core"))
+  .settings(
+    name := "scala-wars-core",
+    commonSettings,
+    testSettings
+  )
+  .enablePlugins(ScalafixPlugin)
+
 lazy val httpService = (project in file("modules/http-service"))
   .settings(
     name := "http-service",
@@ -51,7 +59,8 @@ lazy val httpService = (project in file("modules/http-service"))
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.moneylion.scalawars.httpservice"
   )
-  .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin)
+  .dependsOn(scalaWarsCore)
+  .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin, ScalafixPlugin)
 
 lazy val kafkaService = (project in file("modules/kafka-service"))
   .settings(
@@ -62,7 +71,8 @@ lazy val kafkaService = (project in file("modules/kafka-service"))
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage := "com.moneylion.scalawars.kafkaservice"
   )
-  .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin)
+  .dependsOn(scalaWarsCore)
+  .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin, ScalafixPlugin)
 
 lazy val root = (project in file("."))
   .settings(
@@ -77,12 +87,13 @@ lazy val root = (project in file("."))
       commitReleaseVersion,
       tagRelease,
       releaseStepTask(httpService / Docker / publish),
+      releaseStepTask(kafkaService / Docker / publish),
       setNextVersion,
       commitNextVersion,
       pushChanges
     )
   )
-  .enablePlugins(ReleasePlugin)
-  .aggregate(httpService, kafkaService)
+  .enablePlugins(ReleasePlugin, ScalafixPlugin)
+  .aggregate(scalaWarsCore, httpService, kafkaService)
 
 addCommandAlias("format", ";scalafixAll;scalafmtAll;scalafmtSbt")
