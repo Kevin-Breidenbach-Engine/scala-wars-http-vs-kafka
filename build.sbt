@@ -70,6 +70,31 @@ lazy val kafkaService = (project in file("modules/kafka-service"))
   .dependsOn(scalaWarsCore)
   .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin, ScalafixPlugin)
 
+lazy val client = (project in file("modules/client"))
+  .settings(
+    name := "client",
+    commonSettings,
+    testSettings,
+    dockerSettings,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.moneylion.scalawars.kafkaservice"
+  )
+  .dependsOn(scalaWarsCore)
+  .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin, ScalafixPlugin)
+
+
+lazy val testApp = (project in file("modules/test-app"))
+  .settings(
+    name := "client",
+    commonSettings,
+    testSettings,
+    dockerSettings,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "com.moneylion.scalawars.kafkaservice"
+  )
+  .dependsOn(client)
+  .enablePlugins(JavaAppPackaging, DockerPlugin, BuildInfoPlugin, ScalafixPlugin)
+
 lazy val root = (project in file("."))
   .settings(
     name := "Scala Wars - HTTP vs Kafka",
@@ -90,6 +115,6 @@ lazy val root = (project in file("."))
     )
   )
   .enablePlugins(ReleasePlugin, ScalafixPlugin)
-  .aggregate(scalaWarsCore, httpService, kafkaService)
+  .aggregate(scalaWarsCore, httpService, kafkaService, client, testApp)
 
 addCommandAlias("format", ";scalafixAll;scalafmtAll;scalafmtSbt")
